@@ -9,31 +9,26 @@ import java.util.Scanner;
 
 /**
  *
- * @author LabUser1
+ * @author Rob Helvey
  */
 public class Conway {
 
-    /**
-     * @param args the command line arguments
-     */
     public int userStartSize;
     public int userEndSize;
     public int smallestStartSize = 1;
     public int largestEndSize = 50;
 
     public boolean isValidStartSize(int userStartSize) {
-//        System.out.println("valid start size check");
-        return !(userStartSize < this.smallestStartSize || userEndSize >= this.largestEndSize);
+        return !(userStartSize < this.smallestStartSize || userStartSize > this.largestEndSize);
     }
 
     public boolean isValidEndSize(int userEndSize) {
-//        System.out.println("valid end size check");
-        return !(userEndSize <= this.smallestStartSize || userEndSize > this.largestEndSize);
+        //for optional grid sizing to be done later
+        return !(userEndSize < this.smallestStartSize || userEndSize > this.largestEndSize);
     }
 
     public boolean isValidSize(int size) {
-        //making sure size entered is within valid range
-        //System.out.println("size check");
+        //for optional grid sizing to be done later
         return !(size <= 0 || size > 50);
     }
 
@@ -47,33 +42,38 @@ public class Conway {
 
         System.out.println("Welcome to Rob's version of Conway's Game of Life!");
 
-        while (!isValidStartSize) {
+        while (!isValidStartSize)
+        {
             {
                 System.out.println("Please Enter how many generations you want to see(between 0-50)");
 
-                while (!sc.hasNextInt()) {
+                while (!sc.hasNextInt())
+                {
                     String input = sc.next();
                     System.out.println("Sorry " + input + " is not a valid size, please try again");
                 }
                 conway.userStartSize = sc.nextInt();
-                System.out.println(conway.userStartSize);
                 isValidStartSize = conway.isValidSize(conway.userStartSize);
-                //System.out.println("got here");
-                if (isValidStartSize) {
-
+                if (isValidStartSize)
+                {
                     isValidStartSize = conway.isValidSize(conway.userStartSize);
-                    //System.out.println(baby.userStartInput);
                 }
             }
-            System.out.println("Your the number of generations you have choosen are" + conway.userStartSize);
+            System.out.println("Number of generations choosen: " + conway.userStartSize);
 
         }
-        String[] dish = {
-            "_#_",
-            "_#_",
-            "_#_",};
-        int gens = conway.userStartSize+1;
-        for (int i = 0; i < gens; i++) {
+        String[] dish =
+        {
+            "...o....",
+            "...oo...",
+            "...o....",
+            "...oo...",
+            "...o....",
+            "...o..o.",
+        };
+        int gens = conway.userStartSize + 1;
+        for (int i = 0; i < gens; i++)
+        {
             System.out.println("Generation " + i + ":");
             print(dish);
             dish = life(dish);
@@ -82,51 +82,47 @@ public class Conway {
 
     public static String[] life(String[] dish) {
         String[] newGen = new String[dish.length];
-        for (int row = 0; row < dish.length; row++) {//each row
+        for (int row = 0; row < dish.length; row++)
+        {
             newGen[row] = "";
-            for (int i = 0; i < dish[row].length(); i++) {//each char in the row
-                String above = "";//neighbors above
-                String same = "";//neighbors in the same row
-                String below = "";//neighbors below
-                if (i == 0) {//all the way on the left
-                    //no one above if on the top row
-                    //otherwise grab the neighbors from above
+            for (int i = 0; i < dish[row].length(); i++)
+            {
+                String above = "";
+                String same = "";
+                String below = "";
+                if (i == 0)
+                {
                     above = (row == 0) ? null : dish[row - 1].substring(i,
                             i + 2);
                     same = dish[row].substring(i + 1, i + 2);
-					//no one below if on the bottom row
-                    //otherwise grab the neighbors from below
                     below = (row == dish.length - 1) ? null : dish[row + 1]
                             .substring(i, i + 2);
-                } else if (i == dish[row].length() - 1) {//right
-                    //no one above if on the top row
-                    //otherwise grab the neighbors from above
+                } else if (i == dish[row].length() - 1)
+                {
                     above = (row == 0) ? null : dish[row - 1].substring(i - 1,
                             i + 1);
                     same = dish[row].substring(i - 1, i);
-					//no one below if on the bottom row
-                    //otherwise grab the neighbors from below
                     below = (row == dish.length - 1) ? null : dish[row + 1]
                             .substring(i - 1, i + 1);
-                } else {//anywhere else
-                    //no one above if on the top row
-                    //otherwise grab the neighbors from above
+                } else
+                {
                     above = (row == 0) ? null : dish[row - 1].substring(i - 1,
                             i + 2);
                     same = dish[row].substring(i - 1, i)
                             + dish[row].substring(i + 1, i + 2);
-					//no one below if on the bottom row
-                    //otherwise grab the neighbors from below
                     below = (row == dish.length - 1) ? null : dish[row + 1]
                             .substring(i - 1, i + 2);
                 }
                 int neighbors = getNeighbors(above, same, below);
-                if (neighbors < 2 || neighbors > 3) {
-                    newGen[row] += "_";//<2 or >3 neighbors -> die
-                } else if (neighbors == 3) {
-                    newGen[row] += "#";//3 neighbors -> spawn/live
-                } else {
-                    newGen[row] += dish[row].charAt(i);//2 neighbors -> stay
+                if (neighbors < 2 || neighbors > 3)
+                {
+                    newGen[row] += ".";
+                } else if (neighbors == 3)
+                {
+                    newGen[row] += "o";
+                } else
+                {
+                    newGen[row] += dish[row].charAt(i);
                 }
             }
         }
@@ -135,22 +131,30 @@ public class Conway {
 
     public static int getNeighbors(String above, String same, String below) {
         int ans = 0;
-        if (above != null) {//no one above
-            for (char x : above.toCharArray()) {//each neighbor from above
-                if (x == '#') {
-                    ans++;//count it if someone is here
+        if (above != null)
+        {
+            for (char x : above.toCharArray())
+            {
+                if (x == 'o')
+                {
+                    ans++;
                 }
             }
         }
-        for (char x : same.toCharArray()) {//two on either side
-            if (x == '#') {
-                ans++;//count it if someone is here
+        for (char x : same.toCharArray())
+        {
+            if (x == 'o')
+            {
+                ans++;
             }
         }
-        if (below != null) {//no one below
-            for (char x : below.toCharArray()) {//each neighbor below
-                if (x == '#') {
-                    ans++;//count it if someone is here
+        if (below != null)
+        {
+            for (char x : below.toCharArray())
+            {
+                if (x == 'o')
+                {
+                    ans++;
                 }
             }
         }
@@ -158,7 +162,8 @@ public class Conway {
     }
 
     public static void print(String[] dish) {
-        for (String s : dish) {
+        for (String s : dish)
+        {
             System.out.println(s);
         }
     }
